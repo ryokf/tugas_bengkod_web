@@ -1,16 +1,16 @@
+import React from 'react'
 import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
-import { CheckupModal } from '../components/checkup-modal';
+import CheckupDoneModal from '../../components/checkup-done-modal';
 
 interface DashboardProps {
     checkups: {
         patient_id: number,
-        doctor_id: number,
         checkup_date: string,
         note: string | null,
         price: number | null,
-        doctor: {
+        patient: {
             id: number,
             name: string,
         },
@@ -23,33 +23,57 @@ interface DashboardProps {
                 price: number | null,
             },
         }[];
-    }[]; // Replace 'any[]' with the actual type of 'checkups' if known
+    }[];
 }
 
-export default function Dashboard({ checkups }: DashboardProps) {
-    console.log(checkups)
+const dashboard = ({ checkups, checkup_queue, medicines }: DashboardProps) => {
+    console.log(checkup_queue)
 
     return (
         <AppLayout>
             <Head title="Dashboard" />
             <div className="min-h-screen">
-                <div className="w-11/12 m-auto flex justify-between items-center mb-4">
-                    <h1 className="text-2xl font-semibold mb-4">Riwayat periksa</h1>
-                    <div className="flex items-center gap-2">
-                        <CheckupModal></CheckupModal>
-                    </div>
+            <div className="w-11/12 m-auto flex justify-between items-center mb-4">
+                    <h1 className="text-2xl font-semibold mb-4">Antrian periksa</h1>
                 </div>
                 <div className="w-11/12 m-auto **:static !rounded-md overflow-hidden">
                     <Table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <TableHead>
                             <TableHeadCell className='!py-2'>Tanggal</TableHeadCell>
-                            <TableHeadCell className='!py-2'>Nama Dokter</TableHeadCell>
+                            <TableHeadCell className='!py-2'>Nama Pasien</TableHeadCell>
+                            <TableHeadCell>Catatan</TableHeadCell>
+                            <TableHeadCell>Aksi</TableHeadCell>
+                        </TableHead>
+                        <TableBody className="divide-y " >
+                            {
+                                checkup_queue.map((checkup) => (
+                                    <TableRow key={checkup.patient_id} className="bg-white dark:border-gray-700 dark:bg-gray-900">
+                                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                            {checkup.checkup_date}
+                                        </TableCell>
+                                        <TableCell>{checkup.patient.name}</TableCell>
+                                        <TableCell className='!py-2'>{checkup.note}</TableCell>
+                                        <TableCell className='!py-2'>
+                                            <CheckupDoneModal medicines={medicines} checkupId={checkup.id}></CheckupDoneModal>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+                <div className="w-11/12 m-auto flex justify-between items-center mb-4 mt-8">
+                    <h1 className="text-2xl font-semibold mb-4">Riwayat periksa</h1>
+                </div>
+                <div className="w-11/12 m-auto **:static !rounded-md overflow-hidden">
+                    <Table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <TableHead>
+                            <TableHeadCell className='!py-2'>Tanggal</TableHeadCell>
+                            <TableHeadCell className='!py-2'>Nama Pasien</TableHeadCell>
                             <TableHeadCell>Catatan</TableHeadCell>
                             <TableHeadCell>Biaya</TableHeadCell>
                             <TableHeadCell>Obat</TableHeadCell>
-
                         </TableHead>
-
                         <TableBody className="divide-y " >
                             {
                                 checkups.map((checkup) => (
@@ -57,7 +81,7 @@ export default function Dashboard({ checkups }: DashboardProps) {
                                         <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                             {checkup.checkup_date}
                                         </TableCell>
-                                        <TableCell>{checkup.doctor.name}</TableCell>
+                                        <TableCell>{checkup.patient.name}</TableCell>
                                         <TableCell className='!py-2'>{checkup.note}</TableCell>
                                         <TableCell>{checkup.price}</TableCell>
                                         <TableCell className='!py-2'>
@@ -87,3 +111,5 @@ export default function Dashboard({ checkups }: DashboardProps) {
         </AppLayout>
     );
 }
+
+export default dashboard

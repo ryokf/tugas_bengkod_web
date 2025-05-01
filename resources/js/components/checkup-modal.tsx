@@ -5,9 +5,9 @@ import { router } from "@inertiajs/react";
 import { Button, Label, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useState } from "react";
 
-export function CheckupModal() {
+export function CheckupModal({doctors}) {
     const [openModal, setOpenModal] = useState(false);
-    const [doctor, setDoctor] = useState("1");
+    const [doctor, setDoctor] = useState(doctors[0].id);
     const [date, setDate] = useState("");
     const [note, setNote] = useState("");
 
@@ -42,10 +42,11 @@ export function CheckupModal() {
                             <Label>Pilih dokter</Label>
                             </div>
                             <select className="py-1 px-2 w-full bg-gray-700 rounded" value={doctor} onChange={(e) => setDoctor(e.target.value)} required>
-                                <option value="1">Dokter 1</option>
-                                <option value="2">Dokter 2</option>
-                                <option value="3">Dokter 3</option>
-                                <option value="4">Dokter 4</option>
+                                {
+                                    doctors.map((doctor) => (
+                                        <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                         <div>

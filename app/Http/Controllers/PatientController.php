@@ -14,14 +14,21 @@ class PatientController extends Controller
 {
     public function index()
     {
+        if(auth()->user()->role == 'doctor') {
+            return redirect()->route('doctor.dashboard');
+        }
+
         $checkups = Checkup::with(['checkupDetails.medicine', 'doctor', 'patient'])
             ->where('patient_id', auth()->user()->id)
             ->where('price', '>', 0)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return Inertia::render('dashboard', [
+        $doctors = User::where('role', 'doctor')->get();
+
+        return Inertia::render('patient/dashboard', [
             'checkups' => $checkups,
+            'doctors' => $doctors,
         ]);
     }
 
@@ -48,9 +55,16 @@ class PatientController extends Controller
 
     public function queue()
     {
+        $checkups = Checkup::with(['checkupDetails.medicine', 'doctor', 'patient'])
+            ->where('patient_id', auth()->user()->id)
+            ->where('price', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $doctors = User::where('role', 'doctor')->get();
-        return Inertia::render('queue', [
+        return Inertia::render('patient/queue', [
             'doctors' => $doctors,
+            'checkups' => $checkups,
         ]);
     }
 }
